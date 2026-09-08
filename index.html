@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra 3D - GPT-6 Powered 3D Library Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 100%);
+            color: #e0e0ff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(26, 10, 46, 0.8), rgba(10, 10, 26, 0.9));
+            border-bottom: 2px solid #00ff88;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ff88, #00ccff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #00ff88;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+            align-items: center;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #0a0a1a, #1a0a2e);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .info {
+            padding: 30px;
+            background: rgba(26, 10, 46, 0.6);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info h2 {
+            font-size: 2em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #b0b0ff;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: rgba(26, 10, 46, 0.5);
+            border: 1px solid #00ccff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5em;
+            color: #00ff88;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .feature-card p {
+            color: #b0b0ff;
+            line-height: 1.6;
+        }
+
+        .controls {
+            background: rgba(26, 10, 46, 0.6);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .controls h3 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            color: #0a0a1a;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 3px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #00ff88;
+            margin-top: 60px;
+            color: #b0b0ff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            color: #00ff88;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #b0b0ff;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            #canvas {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ASTRA 3D</h1>
+        <p class="subtitle">GPT-6 Powered 3D Graphics Library</p>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <div>
+                <canvas id="canvas"></canvas>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="fps">60</div>
+                        <div class="stat-label">FPS</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="meshCount">3</div>
+                        <div class="stat-label">Meshes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="triangles">50</div>
+                        <div class="stat-label">Triangles</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info">
+                <h2>Welcome to Astra 3D</h2>
+                <p>A revolutionary 3D graphics library powered by GPT-6 Astra AI.</p>
+                <p><strong>Features:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>🎨 WebGL-based 3D rendering</li>
+                    <li>🤖 AI-powered scene generation</li>
+                    <li>⚡ Real-time shader optimization</li>
+                    <li>🎬 Advanced animation system</li>
+                    <li>🌟 PBR material support</li>
+                    <li>🔧 TypeScript support</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>🎯 Scene Management</h3>
+                <p>Hierarchical scene graph for organizing 3D objects with full transform support.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🤖 AI Integration</h3>
+                <p>GPT-6 Astra integration for intelligent scene generation and optimization.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚙️ Shader System</h3>
+                <p>Advanced GLSL compiler with real-time optimization and validation.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎬 Animations</h3>
+                <p>Keyframe-based animation controller with interpolation and timing.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🌈 Materials</h3>
+                <p>Physically-Based Rendering with metallic, roughness, and color properties.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📦 Easy Integration</h3>
+                <p>Simple API designed for rapid development and integration.</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>Interactive Demo</h3>
+            <div class="button-group">
+                <button onclick="createCube()">Create Cube</button>
+                <button onclick="createSphere()">Create Sphere</button>
+                <button onclick="createPyramid()">Create Pyramid</button>
+                <button onclick="rotateScene()">Rotate Scene</button>
+                <button onclick="clearScene()">Clear Scene</button>
+            </div>
+            <div class="status" id="status">
+                ✓ Astra 3D Engine Initialized
+            </div>
+        </div>
+
+        <footer>
+            <p>Astra 3D © 2026 | Built by Angaachit | Powered by GPT-6 Astra</p>
+            <p><a href="https://github.com/Angaachit/astra-3d" style="color: #00ff88; text-decoration: none;">View on GitHub →</a></p>
+        </footer>
+    </div>
+
+    <script>
+        class SimpleRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.objects = [];
+                this.angle = 0;
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.animate();
+            }
+
+            addObject(obj) {
+                this.objects.push(obj);
+                this.updateStats();
+            }
+
+            clear() {
+                this.objects = [];
+                this.updateStats();
+            }
+
+            rotate() {
+                this.angle += 0.02;
+            }
+
+            animate() {
+                const now = performance.now();
+                const delta = now - this.lastTime;
+                this.frameCount++;
+
+                if (delta >= 1000) {
+                    this.fps = this.frameCount;
+                    document.getElementById('fps').textContent = this.fps;
+                    this.frameCount = 0;
+                    this.lastTime = now;
+                }
+
+                this.render();
+                requestAnimationFrame(() => this.animate());
+            }
+
+            render() {
+                this.ctx.fillStyle = '#0a0a1a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+                gradient.addColorStop(0, 'rgba(10, 10, 26, 0.3)');
+                gradient.addColorStop(1, 'rgba(26, 10, 46, 0.3)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.drawGrid();
+
+                this.ctx.save();
+                this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+                this.ctx.rotate(this.angle);
+
+                for (const obj of this.objects) {
+                    obj.draw(this.ctx, this.angle);
+                }
+
+                this.ctx.restore();
+                this.drawInfo();
+            }
+
+            drawGrid() {
+                this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.1)';
+                this.ctx.lineWidth = 1;
+                const spacing = 50;
+
+                for (let x = 0; x < this.canvas.width; x += spacing) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+
+                for (let y = 0; y < this.canvas.height; y += spacing) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawInfo() {
+                this.ctx.fillStyle = 'rgba(0, 255, 136, 0.8)';
+                this.ctx.font = 'bold 14px monospace';
+                this.ctx.textAlign = 'left';
+                this.ctx.fillText(`Objects: ${this.objects.length}`, 20, 30);
+            }
+
+            updateStats() {
+                let triangles = 0;
+                for (const obj of this.objects) {
+                    triangles += obj.triangles || 0;
+                }
+                document.getElementById('meshCount').textContent = this.objects.length;
+                document.getElementById('triangles').textContent = triangles;
+            }
+        }
+
+        class Cube {
+            constructor(x = 0, y = 0, color = '#00ff88') {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = 40;
+                this.triangles = 12;
+            }
+
+            draw(ctx, angle) {
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.8;
+
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.size, this.y - this.size);
+                ctx.lineTo(this.x + this.size, this.y - this.size);
+                ctx.lineTo(this.x + this.size, this.y + this.size);
+                ctx.lineTo(this.x - this.size, this.y + this.size);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        class Sphere {
+            constructor(x = 0, y = 0, color = '#00ccff') {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = 40;
+                this.triangles = 32;
+            }
+
+            draw(ctx, angle) {
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = '#00ccff';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.8;
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(0, 204, 255, 0.3)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 4; i++) {
+                    const h = (this.radius * 2 / 4) * i - this.radius;
+                    const w = Math.sqrt(this.radius * this.radius - h * h);
+                    ctx.beginPath();
+                    ctx.ellipse(this.x, this.y + h, w, 3, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        class Pyramid {
+            constructor(x = 0, y = 0, color = '#ff00ff') {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = 45;
+                this.triangles = 6;
+            }
+
+            draw(ctx, angle) {
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.8;
+
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size);
+                ctx.lineTo(this.x + this.size, this.y + this.size);
+                ctx.lineTo(this.x - this.size, this.y + this.size);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255, 0, 255, 0.5)';
+                ctx.fillRect(this.x - 3, this.y - 3, 6, 6);
+
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        const canvas = document.getElementById('canvas');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const renderer = new SimpleRenderer(canvas);
+
+        function createCube() {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 200;
+            renderer.addObject(new Cube(x, y));
+            updateStatus('✓ Cube created');
+        }
+
+        function createSphere() {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 200;
+            renderer.addObject(new Sphere(x, y));
+            updateStatus('✓ Sphere created');
+        }
+
+        function createPyramid() {
+            const x = (Math.random() - 0.5) * 200;
+            const y = (Math.random() - 0.5) * 200;
+            renderer.addObject(new Pyramid(x, y));
+            updateStatus('✓ Pyramid created');
+        }
+
+        function rotateScene() {
+            renderer.rotate();
+            updateStatus('✓ Scene rotation enabled');
+        }
+
+        function clearScene() {
+            renderer.clear();
+            renderer.angle = 0;
+            updateStatus('✓ Scene cleared');
+        }
+
+        function updateStatus(message) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            setTimeout(() => {
+                status.textContent = '✓ Astra 3D Engine Initialized';
+            }, 2000);
+        }
+
+        renderer.addObject(new Cube(0, 0));
+        renderer.addObject(new Sphere(-80, -60));
+        renderer.addObject(new Pyramid(80, 60));
+    </script>
+</body>
+</html>
